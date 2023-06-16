@@ -1,16 +1,10 @@
 """
 Business objects
 """
+import uuid
 from enum import Enum
 
-
-class Role(str, Enum):
-    """Role enum.
-
-    This class represents the role of a user.
-    """
-    ADMIN = "admin"
-    USER = "user"
+from pydantic import BaseModel, Field, EmailStr
 
 
 class ServiceStatus(str, Enum):
@@ -23,3 +17,23 @@ class ServiceStatus(str, Enum):
 
     ONLINE = "online"
     OFFLINE = "offline"
+
+
+class BaseEntity(BaseModel):
+    """
+    Base Model
+    """
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, alias="_id")
+
+    class Config:
+        allow_population_by_field_name = True
+        arbitrary_types_allowed = True
+        anystr_strip_whitespace = True
+
+
+class User(BaseEntity):
+    """User model.
+    This class represents a user.
+    """
+    email: EmailStr
+    password: str
