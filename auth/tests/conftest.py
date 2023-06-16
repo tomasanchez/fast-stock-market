@@ -7,6 +7,7 @@ import pytest
 from starlette.testclient import TestClient
 
 from auth.main import app
+from auth.service_layer.password_encoder import PasswordEncoder, BcryptPasswordEncoder
 
 
 class DependencyOverrider:
@@ -48,3 +49,14 @@ def fixture_test_client() -> TestClient:
         TestClient: A test client for the app.
     """
     return TestClient(app)
+
+
+@pytest.fixture(name="password_encoder")
+def fixture_password_encoder() -> PasswordEncoder:
+    """
+    Create a password encoder.
+
+    Returns:
+        PasswordEncoder: A password encoder.
+    """
+    return BcryptPasswordEncoder()
