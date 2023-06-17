@@ -6,8 +6,11 @@ import typing
 import pytest
 from starlette.testclient import TestClient
 
+from auth.adapters.repositories import UserRepository
 from auth.main import app
 from auth.service_layer.password_encoder import PasswordEncoder, BcryptPasswordEncoder
+from auth.service_layer.register import SimpleRegisterService, AsyncRegisterService
+from tests.mocks import InMemoryUserRepository
 
 
 class DependencyOverrider:
@@ -60,3 +63,28 @@ def fixture_password_encoder() -> PasswordEncoder:
         PasswordEncoder: A password encoder.
     """
     return BcryptPasswordEncoder()
+
+
+@pytest.fixture(name="user_repository")
+def fixture_user_repository() -> UserRepository:
+    """
+    Create a user repository.
+
+    Returns:
+        None: A user repository.
+    """
+    return InMemoryUserRepository()
+
+
+@pytest.fixture(name="register_service")
+def fixture_register_service(
+        user_repository: UserRepository,
+        password_encoder: PasswordEncoder
+) -> AsyncRegisterService:
+    """
+    Create a register service.
+
+    Returns:
+        None: A register service.
+    """
+    return SimpleRegisterService(user_repository, password_encoder)

@@ -123,8 +123,16 @@ class AsyncWriteOnlyRepository(abc.ABC):
         raise NotImplementedError
 
 
-class UserRepository(AsyncWriteOnlyRepository, AsyncReadOnlyRepository, abc.ABC):
+class AsyncRepository(AsyncWriteOnlyRepository, AsyncReadOnlyRepository, abc.ABC):
+    """
+    Abstract base class for asynchronous repository implementations.
+    """
+    pass
 
+
+class UserRepository(AsyncRepository, abc.ABC):
+
+    @abc.abstractmethod
     async def find_by_email(self, email: str) -> User | None:
         """
         Finds a user by email.
