@@ -77,7 +77,7 @@ def fixture_user_repository() -> UserRepository:
     return InMemoryUserRepository()
 
 
-@pytest.fixture(name="register_service")
+@pytest.fixture(name="service_layer")
 def fixture_register_service(
         user_repository: UserRepository,
         password_encoder: PasswordEncoder
