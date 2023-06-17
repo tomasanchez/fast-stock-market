@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "auth"
-version = "0.1.0"
+version = "0.4.0"
 description = ""
 authors = ["Tomas Sanchez <tosanchez@frba.utn.edu.ar>"]
 readme = "README.md"
@@ -10,9 +10,10 @@ packages = [{ include = "auth", from = "src" }]
 python = "^3.10"
 fastapi = { version = "^0.97.0", extras = ["all"] }
 motor = "^3.1.2"
-passlib = { version = "^1.7.4", extras = ["bcrypt"] }
-uvicorn = { version = "^0.22.0", extras = ["standard"] }
 motor-types = "^1.0.0b2"
+passlib = { version = "^1.7.4", extras = ["bcrypt"] }
+python-jose = { version = "^3.3.0", extras = ["cryptography"] }
+uvicorn = { version = "^0.22.0", extras = ["standard"] }
 
 
 [tool.poetry.group.dev.dependencies]
