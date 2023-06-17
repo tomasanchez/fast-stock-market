@@ -64,7 +64,7 @@ class AlphaVantageAPI:
     def __init__(self,
                  http_client: AsyncHttpClient,
                  base_url: str = "https://www.alphavantage.co",
-                 api_key: str = "X86NOH6II01P7R24"
+                 api_key: str = "demo"
                  ):
         self._base_url = base_url
         self._api_key = api_key

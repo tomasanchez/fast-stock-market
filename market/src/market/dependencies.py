@@ -9,6 +9,7 @@ from market.adapters.alphavantage_repositories import AlphaVantageStockMarketRep
 from market.adapters.http_client import AsyncHttpClient, AiohttpClient
 from market.adapters.repositories import StockMarketRepository
 from market.service_layer.stock_market import AsyncStockMarketService, StockMarketProvider
+from market.settings.app_settings import ApplicationSettings
 
 async_http_client: AsyncHttpClient | None = None
 
@@ -42,8 +43,10 @@ def get_market_repository() -> StockMarketRepository:
     """
     global market_repository
 
+    api_key = ApplicationSettings().ALPHA_VANTAGE_API_KEY
+
     if market_repository is None:
-        market_repository = AlphaVantageStockMarketRepository(http_client=get_async_http_client())
+        market_repository = AlphaVantageStockMarketRepository(http_client=get_async_http_client(), api_key=api_key)
 
     return market_repository
 

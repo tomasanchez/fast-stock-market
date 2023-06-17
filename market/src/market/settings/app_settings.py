@@ -32,6 +32,7 @@ class ApplicationSettings(BaseSettings):
     PROJECT_NAME: str = "Stock Market Service"
     PROJECT_DESCRIPTION: str = "This service is responsible for retrieving Stock Market Information."
     VERSION: str = __version__
+    ALPHA_VANTAGE_API_KEY: str = "X86NOH6II01P7R24"
     DOCS_URL: str = "/docs"
 
     # All your additional application configuration should go either here or in
