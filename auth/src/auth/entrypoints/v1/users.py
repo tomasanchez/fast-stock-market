@@ -35,7 +35,7 @@ async def query_user(user_id: UUID4,
     Retrieves a user from the database.
     """
 
-    user = await user_repository.find_by(id=user_id)
+    user = await user_repository.find_by({"_id": user_id})
 
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found.")

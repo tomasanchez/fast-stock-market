@@ -20,7 +20,7 @@ class MongoDbSettings(BaseSettings):
     """
 
     CLIENT: str = "mongodb://localhost:27017"
-    DATABASE: str = "auth"
+    DATABASE: str = "stock-auth"
 
     class Config:
         """Config subclass needed to customize BaseSettings settings.

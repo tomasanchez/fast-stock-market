@@ -4,7 +4,7 @@ Business objects
 import uuid
 from enum import Enum
 
-from pydantic import BaseModel, Field, EmailStr
+from pydantic import BaseModel, Field, EmailStr, UUID4
 
 
 class ServiceStatus(str, Enum):
@@ -23,7 +23,7 @@ class BaseEntity(BaseModel):
     """
     Base Model
     """
-    id: uuid.UUID = Field(default_factory=uuid.uuid4, alias="_id")
+    id: UUID4 = Field(default_factory=uuid.uuid4, alias="_id")
 
     class Config:
         allow_population_by_field_name = True

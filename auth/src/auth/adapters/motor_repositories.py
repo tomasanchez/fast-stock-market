@@ -39,15 +39,21 @@ class MotorReadOnlyRepository(AsyncReadOnlyRepository, MotorRepositoryMixin):
         return None
 
     async def find_all(self, *args, **kwargs) -> list[T]:
-        entries = self.collection.find(kwargs)
-        return [self.model_factory(**entry) async for entry in entries]
+        cursor = self.collection.find(kwargs)
+
+        entries: list[T] = list()
+
+        async for entry in cursor:
+            entries.append(self.model_factory(**entry))
+
+        return entries
 
 
 class MotorWriteOnlyRepository(AsyncWriteOnlyRepository, MotorRepositoryMixin):
 
     async def save(self, entity: T, *args, **kwargs) -> T:
         entry = jsonable_encoder(entity)
-        await self.collection.update_one({"_id": entity.id}, entry, upsert=True)
+        await self.collection.insert_one(entry)
         return entity
 
     async def delete(self, entity: T, *args, **kwargs) -> None:
