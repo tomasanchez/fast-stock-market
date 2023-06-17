@@ -8,6 +8,7 @@ from starlette.testclient import TestClient
 
 from auth.adapters.repositories import UserRepository
 from auth.main import app
+from auth.service_layer.auth import AuthService
 from auth.service_layer.jwt import JwtService
 from auth.service_layer.password_encoder import PasswordEncoder, BcryptPasswordEncoder
 from auth.service_layer.register import SimpleRegisterService, AsyncRegisterService
@@ -77,7 +78,7 @@ def fixture_user_repository() -> UserRepository:
     return InMemoryUserRepository()
 
 
-@pytest.fixture(name="service_layer")
+@pytest.fixture(name="register_service")
 def fixture_register_service(
         user_repository: UserRepository,
         password_encoder: PasswordEncoder
@@ -100,3 +101,23 @@ def fixture_jwt_service() -> JwtService:
         JwtService: A JWT service.
     """
     return JwtService()
+
+
+@pytest.fixture(name="auth_service")
+def fixture_auth_service(jwt_service, password_encoder, user_repository) -> AuthService:
+    """
+    Create an authentication service.
+
+    Args:
+        jwt_service: A Json Web Token provider.
+        password_encoder: A password encoder.
+        user_repository: A user repository.
+
+    Returns:
+        AuthService: An authentication service.
+    """
+    return AuthService(
+        user_repository=user_repository,
+        encoder=password_encoder,
+        jwt_service=jwt_service
+    )
