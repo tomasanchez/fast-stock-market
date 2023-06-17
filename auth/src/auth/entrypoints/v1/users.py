@@ -10,7 +10,7 @@ from auth.domain.commands import RegisterUser
 from auth.domain.events import UserCreated
 from auth.domain.schemas import ResponseModels
 
-router = APIRouter(prefix="/users", tags=["Users"])
+router = APIRouter(prefix="/users")
 
 
 @router.get("/",

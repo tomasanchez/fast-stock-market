@@ -5,6 +5,8 @@ from fastapi import Depends
 from auth.adapters.db import ClientFactory
 from auth.adapters.motor_repositories import MotorUserRepository
 from auth.adapters.repositories import UserRepository
+from auth.service_layer.auth import AuthService
+from auth.service_layer.jwt import JwtService
 from auth.service_layer.password_encoder import PasswordEncoder, BcryptPasswordEncoder
 from auth.service_layer.register import AsyncRegisterService, SimpleRegisterService
 from auth.settings.mongo_settings import MongoDbSettings
@@ -80,3 +82,44 @@ def get_register_service(repository: UserRepositoryDependency,
 
 
 RegisterServiceDependency = Annotated[AsyncRegisterService, Depends(get_register_service)]
+
+# ------------------------------- JWT ---------------------------------------------------
+
+jwt_service: JwtService | None = None
+
+
+def get_jwt_service() -> JwtService:
+    """
+    Injects a JWT service.
+    """
+    global jwt_service
+
+    if not jwt_service:
+        jwt_service = JwtService()
+
+    return jwt_service
+
+
+JwtDependency = Annotated[JwtService, Depends(get_jwt_service)]
+
+# ------------------------------- Authentication Service  -------------------------------
+
+auth_service: AuthService | None = None
+
+
+def get_auth_service(
+        repository: UserRepositoryDependency,
+        pw_encoder: PasswordEncoderDependency,
+        jwt: JwtDependency) -> AuthService:
+    """
+    Injects an authentication service.
+    """
+    global auth_service
+
+    if not auth_service:
+        auth_service = AuthService(user_repository=repository, encoder=pw_encoder, jwt_service=jwt)
+
+    return auth_service
+
+
+AuthServiceDependency = Annotated[AuthService, Depends(get_auth_service)]
