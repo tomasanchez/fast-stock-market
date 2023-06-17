@@ -1,0 +1,52 @@
+"""
+Application settings module.
+"""
+
+from pydantic import BaseSettings
+
+from market.version import __version__
+
+
+class ApplicationSettings(BaseSettings):
+    """Define application configuration model.
+
+    Constructor will attempt to determine the values of any fields not passed
+    as keyword arguments by reading from the environment. Default values will
+    still be used if the matching environment variable is not set.
+
+    Environment variables:
+        * FASTAPI_DEBUG
+        * FASTAPI_PROJECT_NAME
+        * FASTAPI_VERSION
+        * FASTAPI_DOCS_URL
+
+    Attributes:
+        DEBUG (bool): FastAPI logging level. You should disable this for
+            production.
+        PROJECT_NAME (str): FastAPI project name.
+        VERSION (str): Application version.
+        DOCS_URL (str): Path where swagger ui will be served at.
+    """
+
+    DEBUG: bool = True
+    PROJECT_NAME: str = "Stock Market Service"
+    PROJECT_DESCRIPTION: str = "This service is responsible for retrieving Stock Market Information."
+    VERSION: str = __version__
+    ALPHA_VANTAGE_API_KEY: str = "X86NOH6II01P7R24"
+    DOCS_URL: str = "/docs"
+
+    # All your additional application configuration should go either here or in
+    # separate file in this submodule.
+
+    class Config:
+        """Config subclass needed to customize BaseSettings settings.
+        Attributes:
+            case_sensitive (bool): When case_sensitive is True, the environment
+                variable names must match field names (optionally with a prefix)
+            env_prefix (str): The prefix for environment variable.
+        Resources:
+            https://pydantic-docs.helpmanual.io/usage/settings/
+        """
+
+        case_sensitive = True
+        env_prefix = "FASTAPI_"
