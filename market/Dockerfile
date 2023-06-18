@@ -26,4 +26,4 @@ RUN poetry config virtualenvs.create false \
 
 EXPOSE $UVICORN_PORT
 
-CMD ["poetry", "run", "python","-m", "auth.main"]
+CMD ["poetry", "run", "python","-m", "market.main"]

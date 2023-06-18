@@ -24,7 +24,7 @@ class UvicornSettings(BaseSettings):
         RELOAD (bool): Whether to reload the server on code changes.
     """
 
-    APP: str = "src.auth.main:app"
+    APP: str = "src.market.main:app"
     HOST: str = "127.0.0.0"
     PORT: int = 8000
     RELOAD: bool = False
