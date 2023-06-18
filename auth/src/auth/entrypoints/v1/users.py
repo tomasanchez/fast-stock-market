@@ -8,7 +8,7 @@ from pydantic import UUID4
 from auth.dependencies import UserRepositoryDependency, RegisterServiceDependency
 from auth.domain.commands import RegisterUser
 from auth.domain.events import UserCreated
-from auth.domain.schemas import ResponseModels
+from auth.domain.schemas import ResponseModels, ResponseModel
 
 router = APIRouter(prefix="/users")
 
@@ -30,7 +30,7 @@ async def query_users(user_repository: UserRepositoryDependency) -> ResponseMode
             status_code=status.HTTP_200_OK,
             tags=["Queries"])
 async def query_user(user_id: UUID4,
-                     user_repository: UserRepositoryDependency, ) -> ResponseModels[UserCreated]:
+                     user_repository: UserRepositoryDependency, ) -> ResponseModel[UserCreated]:
     """
     Retrieves a user from the database.
     """
@@ -40,7 +40,7 @@ async def query_user(user_id: UUID4,
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found.")
 
-    return ResponseModels[UserCreated](data=[UserCreated(**user.dict())])
+    return ResponseModel[UserCreated](data=UserCreated(**user.dict()))
 
 
 @router.post("/",
@@ -51,7 +51,7 @@ async def create_user(command: RegisterUser,
                       register_service: RegisterServiceDependency,
                       request: Request,
                       response: Response,
-                      ) -> ResponseModels[UserCreated]:
+                      ) -> ResponseModel[UserCreated]:
     """
     Allows to register a new user in the system.
     """
@@ -62,4 +62,4 @@ async def create_user(command: RegisterUser,
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
 
     response.headers["Location"] = f"{request.base_url}api/v1/users/{user.id}"
-    return ResponseModels[UserCreated](data=[UserCreated(**user.dict())])
+    return ResponseModel[UserCreated](data=UserCreated(**user.dict()))
