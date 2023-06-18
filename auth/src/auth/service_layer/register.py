@@ -17,13 +17,15 @@ class AsyncRegisterService(abc.ABC):
     """
 
     @abc.abstractmethod
-    async def register(self, username: str, password: str) -> User:
+    async def register(self, username: str, password: str, name: str | None, last_name: str | None) -> User:
         """
         Registers a new user.
 
         Args:
             username (str): The username of the user.
             password (str): The password of the user.
+            name (str): The name of the user.
+            last_name (str): The last name of the user.
 
         Returns:
             User: The registered user.
@@ -58,11 +60,14 @@ class SimpleRegisterService(AsyncRegisterService):
         if user:
             raise IllegalUserError(f"Email {username} is already in use.")
 
-    async def register(self, username: str, password: str) -> User:
+    async def register(self, username: str,
+                       password: str,
+                       name: str | None = None,
+                       last_name: str | None = None) -> User:
         await self._verify_username(username)
 
         hashed_password = self.password_encoder.encode(password)
 
-        user = User(email=EmailStr(username), password=hashed_password)
+        user = User(email=EmailStr(username), password=hashed_password, name=name, last_name=last_name)
 
         return await self.user_repository.save(user)

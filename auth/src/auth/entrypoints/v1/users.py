@@ -57,7 +57,10 @@ async def create_user(command: RegisterUser,
     """
 
     try:
-        user = await register_service.register(username=command.email, password=command.password)
+        user = await register_service.register(username=command.email,
+                                               password=command.password,
+                                               name=command.name,
+                                               last_name=command.last_name)
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
 

@@ -37,3 +37,5 @@ class User(BaseEntity):
     """
     email: EmailStr
     password: str
+    name: str | None
+    last_name: str | None
