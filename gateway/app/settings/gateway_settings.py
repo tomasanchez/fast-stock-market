@@ -23,7 +23,10 @@ class GatewaySettings(BaseSettings):
         TIMEOUT (int): Timeout for requests.
     """
     SERVICES: list[Service] = [Service(name="Auth",
-                                       base_url="http://localhost:8000")]
+                                       base_url="http://localhost:8000"),
+                               Service(name="Stock Market",
+                                       base_url="http://localhost:8001")
+                               ]
     TIMEOUT: int = 59
 
     class Config(BaseConfig):
