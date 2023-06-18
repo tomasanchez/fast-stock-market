@@ -21,6 +21,7 @@ class ApplicationSettings(BaseSettings):
         * FASTAPI_USE_LIMITER
         * FASTAPI_VERSION
         * FASTAPI_DOCS_URL
+        * FASTAPI_OTLP_GRPC_ENDPOINT
 
     Attributes:
         DEBUG (bool): FastAPI logging level. You should disable this for
@@ -32,6 +33,7 @@ class ApplicationSettings(BaseSettings):
         LIMITER_INTERVAL (int): Interval in seconds.
         VERSION (str): Application version.
         DOCS_URL (str): Path where swagger ui will be served at.
+        OTLP_GRPC_ENDPOINT (str): OpenTelemetry collector endpoint.
     """
 
     DEBUG: bool = False
@@ -42,6 +44,7 @@ class ApplicationSettings(BaseSettings):
     LIMITER_INTERVAL: int = 60
     VERSION: str = __version__
     DOCS_URL: str = "/docs"
+    OTLP_GRPC_ENDPOINT: str = "http://localhost:4317"
 
     # All your additional application configuration should go either here or in
     # separate file in this submodule.

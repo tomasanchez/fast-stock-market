@@ -17,6 +17,11 @@ from app.domain.schemas import CamelCaseModel
 log = logging.getLogger("uvicorn")
 
 
+class EntryPointFilter(logging.Filter):
+    def filter(self, record: logging.LogRecord) -> bool:
+        return record.getMessage().find("GET /metrics") == -1
+
+
 async def make_request(
         url: str,
         method: str,

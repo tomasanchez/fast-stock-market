@@ -1,14 +1,15 @@
 """Application implementation - ASGI."""
 
-from contextlib import asynccontextmanager
 import logging
+from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
 from app.adapters.http_client import aio_http_client
+from app.adapters.telemetry import metrics, setting_otlp
 from app.dependencies import get_redis
-from app.middleware import rate_limiter_middleware
+from app.middleware import rate_limiter_middleware, PrometheusMiddleware
 from app.router import api_router_v1, root_router
 from app.settings.app_settings import ApplicationSettings
 
@@ -116,6 +117,13 @@ def get_application() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+    # Prometheus Metrics
+    app.add_middleware(PrometheusMiddleware, app_name=settings.PROJECT_NAME)
+    app.add_route("/metrics", metrics)
+
+    # Open Telemetry Exporter
+    setting_otlp(app=app, app_name=settings.PROJECT_NAME, endpoint=settings.OTLP_GRPC_ENDPOINT)
 
     log.debug("Add application routes.")
 
