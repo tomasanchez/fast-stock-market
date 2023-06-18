@@ -1,0 +1,75 @@
+version: '3'
+
+services:
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./data:/data/db
+    restart: always
+    networks:
+      - mongo-network
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - cache:/data
+    networks:
+      - redis-network
+  auth:
+    build:
+      context: auth
+      dockerfile: Dockerfile
+    depends_on:
+      - mongodb
+    environment:
+      - MONGO_CLIENT=mongodb://mongodb:27017
+      - UVICORN_HOST=0.0.0.0
+      - UVICORN_PORT=8000
+    networks:
+      - api-network
+      - mongo-network
+  market:
+    build:
+        context: market
+        dockerfile: Dockerfile
+    environment:
+      - UVICORN_HOST=0.0.0.0
+      - UVICORN_PORT=8001
+    networks:
+      - api-network
+  gateway:
+    build:
+      context: gateway
+      dockerfile: Dockerfile
+    depends_on:
+      - redis
+    ports:
+      - "80:80"
+    environment:
+      - 'GATEWAY_SERVICES=[{"name": "Auth", "base_url": "http://auth:8000"},
+      {"name": "Stock Market", "base_url": "http://market:8001"}]'
+      - REDIS_HOST=redis://redis:6379
+      - FASTAPI_USE_LIMITER=1
+      - FASTAPI_LIMITER_THRESHOLD=10
+      - FASTAPI_LIMITER_INTERVAL=60
+    networks:
+      - api-network
+      - redis-network
+      - web-network
+
+volumes:
+  cache:
+    driver: local
+
+networks:
+  api-network:
+    driver: bridge
+  mongo-network:
+    driver: bridge
+  redis-network:
+    driver: bridge
+  web-network:
+    driver: bridge
