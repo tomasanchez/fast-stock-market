@@ -1,35 +1,35 @@
 """
-Uvicorn Configuration Settings
+Gateway settings module.
 """
-from pydantic import BaseSettings
+
+from pydantic import BaseConfig, BaseSettings
+
+from app.domain.models import Service
 
 
-class UvicornSettings(BaseSettings):
-    """Uvicorn Configuration Settings
+class GatewaySettings(BaseSettings):
+    """Define application configuration model.
 
     Constructor will attempt to determine the values of any fields not passed
     as keyword arguments by reading from the environment. Default values will
     still be used if the matching environment variable is not set.
 
     Environment variables:
-        * UVICORN_APP
-        * UVICORN_HOST
-        * UVICORN_PORT
-        * UVICORN_RELOAD
+        * GATEWAY_SERVICES
+        * GATEWAY_TIMEOUT
 
     Attributes:
-        APP (str): The application module path.
-        HOST (str): The host to bind to.
-        PORT (int): The port to bind to.
-        RELOAD (bool): Whether to reload the server on code changes.
+        SERVICES (Service): List of services to be proxied.
+        TIMEOUT (int): Timeout for requests.
     """
+    SERVICES: list[Service] = [Service(name="Auth",
+                                       base_url="http://localhost:8000"),
+                               Service(name="Stock Market",
+                                       base_url="http://localhost:8001")
+                               ]
+    TIMEOUT: int = 59
 
-    APP: str = "src.market.main:app"
-    HOST: str = "127.0.0.0"
-    PORT: int = 8000
-    RELOAD: bool = False
-
-    class Config:
+    class Config(BaseConfig):
         """Config subclass needed to customize BaseSettings settings.
         Attributes:
             case_sensitive (bool): When case_sensitive is True, the environment
@@ -38,5 +38,6 @@ class UvicornSettings(BaseSettings):
         Resources:
             https://pydantic-docs.helpmanual.io/usage/settings/
         """
+
         case_sensitive = True
-        env_prefix = "UVICORN_"
+        env_prefix = "GATEWAY_"

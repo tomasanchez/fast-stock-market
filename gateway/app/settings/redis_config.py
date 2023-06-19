@@ -1,42 +1,47 @@
-"""
-Uvicorn Configuration Settings
-"""
+"""Application configuration - Redis."""
+
 from pydantic import BaseSettings
 
 
-class UvicornSettings(BaseSettings):
-    """Uvicorn Configuration Settings
+class RedisSettings(BaseSettings):
+    """Define Redis configuration model.
 
     Constructor will attempt to determine the values of any fields not passed
     as keyword arguments by reading from the environment. Default values will
     still be used if the matching environment variable is not set.
 
     Environment variables:
-        * UVICORN_APP
-        * UVICORN_HOST
-        * UVICORN_PORT
-        * UVICORN_RELOAD
+        * REDIS_HOST
+        * REDIS_PORT
+        * REDIS_CLUSTER
+        * REDIS_USERNAME
+        * REDIS_PASSWORD
 
     Attributes:
-        APP (str): The application module path.
-        HOST (str): The host to bind to.
-        PORT (int): The port to bind to.
-        RELOAD (bool): Whether to reload the server on code changes.
+        HOST (str): Redis host.
+        PORT (int): Redis port.
+        CLUSTER (bool): Redis cluster.
+        USERNAME (typing.Optional[str]): Redis username.
+        PASSWORD (typing.Optional[str]): Redis password.
     """
 
-    APP: str = "src.market.main:app"
-    HOST: str = "127.0.0.0"
-    PORT: int = 8000
-    RELOAD: bool = False
+    HOST: str = "localhost"
+    PORT: int = 6379
+    ACTIVE: bool = True
+    CLUSTER: bool = False
+    USERNAME: str | None = None
+    PASSWORD: str | None = None
 
     class Config:
         """Config subclass needed to customize BaseSettings settings.
+
         Attributes:
             case_sensitive (bool): When case_sensitive is True, the environment
                 variable names must match field names (optionally with a prefix)
             env_prefix (str): The prefix for environment variable.
+
         Resources:
             https://pydantic-docs.helpmanual.io/usage/settings/
         """
         case_sensitive = True
-        env_prefix = "UVICORN_"
+        env_prefix = "REDIS_"

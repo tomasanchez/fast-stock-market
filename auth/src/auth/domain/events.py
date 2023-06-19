@@ -36,6 +36,8 @@ class UserCreated(CamelCaseModel):
 
     id: UUID4 = Field(description="The user id.", example="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11")
     email: EmailStr = Field(description="The email.", example="john.doe@e.mail")
+    name: str | None = Field(description="The user first name.", example="John", default=None)
+    last_name: str | None = Field(description="The user last name.", example="Doe", default=None)
 
 
 class UserAuthenticated(UserCreated):

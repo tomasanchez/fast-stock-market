@@ -1,0 +1,16 @@
+aiohttp~=3.8.4
+aioredis~=2.0.1
+fastapi~=0.95.1
+pydantic~=1.10.7
+pydantic[email]
+redis~=4.5.5
+starlette~=0.26.1
+uvicorn~=0.22.0
+
+httpx==0.24.0
+prometheus-client==0.16.0
+opentelemetry-instrumentation-fastapi==0.38b0
+opentelemetry-instrumentation-logging==0.38b0
+opentelemetry-exporter-otlp==1.17.0
+opentelemetry-api==1.17.0
+opentelemetry-sdk==1.17.0
