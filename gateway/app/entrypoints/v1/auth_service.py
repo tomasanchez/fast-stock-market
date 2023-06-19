@@ -14,11 +14,14 @@ from app.domain.events.auth_service import TokenGenerated, UserAuthenticated, Us
 from app.domain.schemas import ResponseModel, ResponseModels
 from app.middleware import AuthMiddleware
 from app.service_layer.gateway import api_v1_url, get_service, get_users, verify_status
+from app.utils.logging import Logger
 
 router = APIRouter()
 
 UsersQuery = Annotated[
     str | None, Query(description="A list of comma-separated usernames.", example="johndoe, other", alias="users")]
+
+logger = Logger().get_logger()
 
 
 @router.get("/users",
@@ -32,6 +35,8 @@ async def query_users(
     """
     Retrieves users from the Database.
     """
+
+    logger.info("Users Queried.")
 
     service = await get_service(service_name="auth", services=services)
 
@@ -61,6 +66,8 @@ async def query_user_by_id(
                                    client=client, method="GET")
 
     verify_status(response=response, status_code=code)
+
+    logger.info(f"User {user_id} queried.")
 
     return ResponseModel[UserCreated](**response)
 
@@ -92,6 +99,8 @@ async def register(command: RegisterUser,
 
     response_body = ResponseModel[UserCreated](**service_response)
 
+    logger.info(f"User {response_body.data.id} created.")
+
     response.headers["Location"] = f"{request.base_url}api/v1/users/{response_body.data.id}"
     return response_body
 
@@ -118,6 +127,8 @@ async def authenticate(command: AuthenticateUser,
 
     verify_status(response=auth_response, status_code=status_code)
 
+    logger.info(f"User {command.email} authenticated.")
+
     return ResponseModel[TokenGenerated](**auth_response)
 
 
@@ -126,11 +137,13 @@ async def authenticate(command: AuthenticateUser,
             summary="Authenticates current user",
             tags=["Queries"],
             )
-async def authenticate_me(
+async def authorize(
         user: AuthMiddleware
 ) -> ResponseModel[UserAuthenticated]:
     """
     Validates a user token. If valid, retrieves the user information.
     """
+
+    logger.info(f"User {user.id} authorized.")
 
     return ResponseModel[UserAuthenticated](data=user)

@@ -16,8 +16,11 @@ from app.domain.events.actuator import ReadinessChecked, StatusChecked
 from app.domain.models import Service, ServiceStatus
 from app.domain.schemas import ResponseModel
 from app.settings.redis_config import RedisSettings
+from app.utils.logging import Logger
 
 router = APIRouter(tags=["Actuator"])
+
+logger = Logger().get_logger()
 
 
 @router.get("/readiness",
@@ -30,6 +33,9 @@ async def readiness(services: ServiceProvider,
     """
     Checks if the service is ready to accept requests.
     """
+
+    logger.info("Checking services readiness...")
+
     redis_settings = RedisSettings()
     services_status: list[StatusChecked] = await check_services(services=services,
                                                                 client=client,
@@ -38,7 +44,10 @@ async def readiness(services: ServiceProvider,
     readiness_checked = ReadinessChecked(status=ServiceStatus.ONLINE, services=services_status)
 
     if any([service for service in services_status if service.status == ServiceStatus.OFFLINE]):
+        logger.error("Service is not ready to accept requests.")
         raise HTTPException(status_code=HTTP_503_SERVICE_UNAVAILABLE, detail=readiness_checked.dict())
+
+    logger.info("Service is ready to accept requests.")
 
     return ResponseModel(data=readiness_checked)
 
@@ -51,6 +60,7 @@ async def health() -> ResponseModel[StatusChecked]:
     """
     Checks if the service is up and running.
     """
+    logger.info("Health Checked")
     return ResponseModel(data=StatusChecked(name="api-gateway", status=ServiceStatus.ONLINE))
 
 

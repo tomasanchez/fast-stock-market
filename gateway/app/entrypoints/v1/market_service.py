@@ -11,8 +11,11 @@ from app.domain.events.stock_market_service import StockMarketQueried, StockData
 from app.domain.schemas import ResponseModels, ResponseModel
 from app.middleware import AuthMiddleware
 from app.service_layer.gateway import get_service, api_v1_url, verify_status
+from app.utils.logging import Logger
 
 router = APIRouter(prefix="/stocks")
+
+logger = Logger().get_logger()
 
 
 @router.get("/",
@@ -29,6 +32,8 @@ async def find_stock_market_matches(
     """
     Retrieves information of Stock Data which best matches a keyword.
     """
+
+    logger.info(f"Stock Market Queried by User(email={user.email}) with Keyword={keyword}.")
 
     service_response, status_code = await gateway(
         service_url=(await get_service(service_name="Stock Market", services=services)).base_url,
@@ -57,6 +62,8 @@ async def find_stock_symbol(
     """
     Retrieves information of Stock Data which best matches a keyword.
     """
+
+    logger.info(f"Stock Market Queried by User(email={user.email}) for Symbol={symbol}.")
 
     service_response, status_code = await gateway(
         service_url=(await get_service(service_name="Stock Market", services=services)).base_url,
