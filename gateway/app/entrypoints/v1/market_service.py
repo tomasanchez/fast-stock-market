@@ -1,6 +1,7 @@
 """
 Stock Market Service Gateway Entry Point.
 """
+import logging
 from typing import Annotated
 
 from fastapi import APIRouter, status, Query, Path
@@ -11,11 +12,8 @@ from app.domain.events.stock_market_service import StockMarketQueried, StockData
 from app.domain.schemas import ResponseModels, ResponseModel
 from app.middleware import AuthMiddleware
 from app.service_layer.gateway import get_service, api_v1_url, verify_status
-from app.utils.logging import Logger
 
 router = APIRouter(prefix="/stocks")
-
-logger = Logger().get_logger()
 
 
 @router.get("/",
@@ -33,8 +31,6 @@ async def find_stock_market_matches(
     Retrieves information of Stock Data which best matches a keyword.
     """
 
-    logger.info(f"Stock Market Queried by User(email={user.email}) with Keyword={keyword}.")
-
     service_response, status_code = await gateway(
         service_url=(await get_service(service_name="Stock Market", services=services)).base_url,
         path=f"{api_v1_url}/stocks",
@@ -44,6 +40,10 @@ async def find_stock_market_matches(
     )
 
     verify_status(response=service_response, status_code=status_code)
+
+    logging.info(
+        f"Data Retrieved: Stock Market Queried by User(email={user.email})"
+        f" with Keyword={keyword} got {len(service_response.get('data', []))} results.")
 
     return ResponseModels[StockMarketQueried](**service_response)
 
@@ -63,8 +63,6 @@ async def find_stock_symbol(
     Retrieves information of Stock Data which best matches a keyword.
     """
 
-    logger.info(f"Stock Market Queried by User(email={user.email}) for Symbol={symbol}.")
-
     service_response, status_code = await gateway(
         service_url=(await get_service(service_name="Stock Market", services=services)).base_url,
         path=f"{api_v1_url}/stocks/{symbol}",
@@ -73,5 +71,7 @@ async def find_stock_symbol(
     )
 
     verify_status(response=service_response, status_code=status_code)
+
+    logging.info(f"Data Retrieved: Stock Market Queried by User(email={user.email}) for Symbol={symbol}.")
 
     return ResponseModel[StockDataRetrieved](**service_response)

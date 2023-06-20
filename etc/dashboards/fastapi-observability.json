@@ -845,6 +845,22 @@
                 }
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "WARNING"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed",
+                  "seriesBy": "last"
+                }
+              }
+            ]
           }
         ]
       },
@@ -874,8 +890,8 @@
             "type": "loki",
             "uid": "loki"
           },
-          "editorMode": "code",
-          "expr": "sum by(type) (rate({compose_service=\"gateway\"} | pattern `<date> <time> <type> <logger> <code> [<_>=<trace_id> <_>=<span_id> <_>=<service_name>] - <msg>` | type != \"\" |= \"$log_keyword\" [1m]))",
+          "editorMode": "builder",
+          "expr": "sum by(type) (rate({compose_service=\"gateway\"} | pattern `<date> <time> <type> [<logger>] [<code>] [<_>=<trace_id> <_>=<span_id> <_>=<service_name>] - <msg>` | type  =~ `INFO|ERROR|WARNING|CRITICAL` |= `$log_keyword` [1m]))",
           "legendFormat": "{{type}}",
           "queryType": "range",
           "refId": "A"
@@ -1001,13 +1017,13 @@
     ]
   },
   "time": {
-    "from": "now-5m",
+    "from": "now-30m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "FastAPI Observability",
   "uid": "dLsDQIUnz",
-  "version": 5,
+  "version": 6,
   "weekStart": ""
 }

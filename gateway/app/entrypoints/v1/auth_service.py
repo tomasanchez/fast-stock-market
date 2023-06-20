@@ -1,6 +1,7 @@
 """
 Entry points for the Auth service.
 """
+import logging
 from typing import Annotated
 
 from fastapi import APIRouter, Path, Query, Request, Response
@@ -14,14 +15,11 @@ from app.domain.events.auth_service import TokenGenerated, UserAuthenticated, Us
 from app.domain.schemas import ResponseModel, ResponseModels
 from app.middleware import AuthMiddleware
 from app.service_layer.gateway import api_v1_url, get_service, get_users, verify_status
-from app.utils.logging import Logger
 
 router = APIRouter()
 
 UsersQuery = Annotated[
     str | None, Query(description="A list of comma-separated usernames.", example="johndoe, other", alias="users")]
-
-logger = Logger().get_logger()
 
 
 @router.get("/users",
@@ -36,13 +34,13 @@ async def query_users(
     Retrieves users from the Database.
     """
 
-    logger.info("Users Queried.")
-
     service = await get_service(service_name="auth", services=services)
 
     response, code = await get_users(service=service, client=client)
 
     verify_status(response=response, status_code=code)
+
+    logging.info(f"Retrieved {len(response.get('data', []))} users")
 
     return ResponseModels[UserCreated](**response)
 
@@ -67,7 +65,7 @@ async def query_user_by_id(
 
     verify_status(response=response, status_code=code)
 
-    logger.info(f"User {user_id} queried.")
+    logging.info(f"Retrieved User(id={user_id}).")
 
     return ResponseModel[UserCreated](**response)
 
@@ -99,7 +97,7 @@ async def register(command: RegisterUser,
 
     response_body = ResponseModel[UserCreated](**service_response)
 
-    logger.info(f"User {response_body.data.id} created.")
+    logging.info(f"Created User(id={response_body.data.id}).")
 
     response.headers["Location"] = f"{request.base_url}api/v1/users/{response_body.data.id}"
     return response_body
@@ -127,7 +125,7 @@ async def authenticate(command: AuthenticateUser,
 
     verify_status(response=auth_response, status_code=status_code)
 
-    logger.info(f"User {command.email} authenticated.")
+    logging.info(f"Authenticated User(email={command.email}).")
 
     return ResponseModel[TokenGenerated](**auth_response)
 
@@ -144,6 +142,6 @@ async def authorize(
     Validates a user token. If valid, retrieves the user information.
     """
 
-    logger.info(f"User {user.id} authorized.")
+    logging.info(f"User(email={user.email}) authenticated.")
 
     return ResponseModel[UserAuthenticated](data=user)

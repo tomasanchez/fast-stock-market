@@ -1,6 +1,7 @@
 """
 FastAPI middlewares
 """
+import logging
 import time
 from typing import Annotated
 
@@ -18,9 +19,6 @@ from app.adapters.network import gateway
 from app.dependencies import AsyncHttpClientDependency, BearerTokenAuth, RateLimiterDependency, ServiceProvider
 from app.domain.events.auth_service import UserAuthenticated
 from app.service_layer.gateway import api_v1_url, get_service, verify_status
-from app.utils.logging import Logger
-
-logger = Logger().get_logger()
 
 
 ########################################################################################
@@ -47,7 +45,8 @@ async def rate_limiter_middleware(request: Request, rate_limiter: RateLimiterDep
         await rate_limiter.timer(key)
 
     if not await rate_limiter.is_allowed(requests):
-        logger.error(f"Rate limit exceeded for Client(host={issuer}).")
+        logging.error(
+            f"Gateway Failure({status.HTTP_429_TOO_MANY_REQUESTS}): Rate limit exceeded for Client(host={issuer}).")
         raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail=f"Surpassed rate limit.")
 
 

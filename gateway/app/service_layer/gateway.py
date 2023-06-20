@@ -1,6 +1,7 @@
 """
 Gateway Service functions.
 """
+import logging
 from typing import Any
 
 from fastapi import HTTPException
@@ -37,6 +38,7 @@ def verify_status(response: dict[str, Any],
         status_codes = [HTTP_200_OK, ]
 
     if status_code not in status_codes:
+        logging.error(f"Gateway Failure({status_code}): {response.get('detail', default_err_msg)}")
         raise HTTPException(status_code=status_code, detail=response.get("detail", default_err_msg))
 
 
@@ -57,6 +59,7 @@ async def get_service(service_name: str, services: list[Service]) -> Service:
     [service] = [service for service in services if service.name.lower() == service_name.lower()]
 
     if not service:
+        logging.error(f"Gateway Failure({HTTP_503_SERVICE_UNAVAILABLE}): {service_name} service unavailable.")
         raise HTTPException(status_code=HTTP_503_SERVICE_UNAVAILABLE, detail=f"{service_name} service unavailable.")
 
     return service
